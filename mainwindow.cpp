@@ -6,6 +6,16 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    mediaPlayer = new QMediaPlayer(this);
+    audioOutput = new QAudioOutput(this);
+    videoWidget = new QVideoWidget(this);
+
+    mediaPlayer->setAudioOutput(audioOutput);
+    mediaPlayer->setVideoOutput(videoWidget);
+
+    ui->centralwidget->layout()->addWidget(videoWidget);
+    videoWidget->show();
 }
 
 MainWindow::~MainWindow()

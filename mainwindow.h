@@ -8,6 +8,8 @@
 #include <QSlider>
 #include <QPushButton>
 #include <QListWidgetItem>
+#include <QWidget>
+#include <QLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -43,7 +45,7 @@ private:
 
     QStringList mediaFiles;
     int currentIndex;
-    QMediaPlayer *player;
+    QMediaPlayer *mediaPlayer;
     QAudioOutput *audioOutput;
     QVideoWidget *videoWidget;
 };
