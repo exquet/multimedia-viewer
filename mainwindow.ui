@@ -20,7 +20,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QListWidget" name="listWidget">
+   <widget class="QListWidget" name="filesList">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -30,7 +30,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QWidget" name="widget" native="true">
+   <widget class="QWidget" name="vidWidget" native="true">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -45,7 +45,7 @@ bgcolor: gray;
 }</string>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider">
+   <widget class="QSlider" name="volumeSlider">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -76,7 +76,7 @@ bgcolor: gray;
     <property name="orientation">
      <enum>Qt::Orientation::Horizontal</enum>
     </property>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="backButton">
      <property name="minimumSize">
       <size>
        <width>35</width>
@@ -93,7 +93,7 @@ bgcolor: gray;
       <string>PushButton</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="playButton">
      <property name="minimumSize">
       <size>
        <width>35</width>
@@ -110,7 +110,7 @@ bgcolor: gray;
       <string>PushButton</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="pauseButton">
      <property name="minimumSize">
       <size>
        <width>35</width>
@@ -127,7 +127,7 @@ bgcolor: gray;
       <string>PushButton</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="nextButton">
      <property name="minimumSize">
       <size>
        <width>35</width>

@@ -12,3 +12,39 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_nextButton_clicked()
+{
+
+}
+
+
+void MainWindow::on_pauseButton_clicked()
+{
+
+}
+
+
+void MainWindow::on_playButton_clicked()
+{
+
+}
+
+
+void MainWindow::on_backButton_clicked()
+{
+
+}
+
+
+void MainWindow::on_volumeSlider_valueChanged(int value)
+{
+
+}
+
+
+void MainWindow::on_filesList_itemClicked(QListWidgetItem *item)
+{
+
+}
+
