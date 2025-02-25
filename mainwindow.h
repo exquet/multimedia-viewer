@@ -10,6 +10,7 @@
 #include <QListWidgetItem>
 #include <QWidget>
 #include <QLayout>
+#include <QVBoxLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
