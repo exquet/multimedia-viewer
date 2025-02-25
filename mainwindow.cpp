@@ -59,6 +59,24 @@ void MainWindow::on_volumeSlider_valueChanged(int value)
 
 void MainWindow::on_filesList_itemClicked(QListWidgetItem *item)
 {
+    QString filePath = item->data(Qt::UserRole).toString();
+    mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
+    mediaPlayer->play();
+}
 
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть медиа"), "",
+                                                    tr("Файлы (*.mp4 *.avi *.mkv);;Все файлы (*.*)"));
+
+    // создание объекта QFileInfo с использованием пути к файлу fileName
+    QListWidgetItem *item = new QListWidgetItem(QFileInfo(fileName).fileName(), ui->filesList);
+    item->setData(Qt::UserRole, fileName); // установка дополнительных сведений о файле
+    ui->filesList->addItem(item);
+
+    // метод QMediaPlayer устанавливающий источник медиа для воспроизведения.
+    mediaPlayer->setSource(QUrl::fromLocalFile(fileName));
+    mediaPlayer->play();
 }
 

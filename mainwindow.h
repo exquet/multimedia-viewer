@@ -11,6 +11,9 @@
 #include <QWidget>
 #include <QLayout>
 #include <QVBoxLayout>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QUrl>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -40,6 +43,8 @@ private slots:
     void on_volumeSlider_valueChanged(int value);
 
     void on_filesList_itemClicked(QListWidgetItem *item);
+
+    void on_actionOpen_triggered();
 
 private:
     Ui::MainWindow *ui;
