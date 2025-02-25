@@ -4,6 +4,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , currentItem(0)
 {
     ui->setupUi(this);
 
@@ -29,25 +30,33 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_nextButton_clicked()
 {
-
+    currentItem = ui->filesList->currentRow();
+    if (currentItem < ui->filesList->count() - 1) {
+        ui->filesList->setCurrentRow(currentItem + 1);
+        playCurrentItem();
+    }
 }
 
 
 void MainWindow::on_pauseButton_clicked()
 {
-
+    mediaPlayer->pause();
 }
 
 
 void MainWindow::on_playButton_clicked()
 {
-
+    mediaPlayer->play();
 }
 
 
 void MainWindow::on_backButton_clicked()
 {
-
+    int currentRow = ui->filesList->currentRow();
+    if (currentRow > 0) {
+        ui->filesList->setCurrentRow(currentRow - 1);
+        playCurrentItem();
+    }
 }
 
 
@@ -59,9 +68,8 @@ void MainWindow::on_volumeSlider_valueChanged(int value)
 
 void MainWindow::on_filesList_itemClicked(QListWidgetItem *item)
 {
-    QString filePath = item->data(Qt::UserRole).toString();
+    QString filePath = item->data(Qt::UserRole).toString(); // код извлекает путь к файлу
     mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
-    mediaPlayer->play();
 }
 
 
@@ -77,6 +85,14 @@ void MainWindow::on_actionOpen_triggered()
 
     // метод QMediaPlayer устанавливающий источник медиа для воспроизведения.
     mediaPlayer->setSource(QUrl::fromLocalFile(fileName));
-    mediaPlayer->play();
+}
+
+void MainWindow::playCurrentItem() {
+    QListWidgetItem *currentItem = ui->filesList->currentItem();
+
+    if (currentItem) {
+        QString filePath = currentItem->data(Qt::UserRole).toString();
+        mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
+    }
 }
 

@@ -46,6 +46,9 @@ private slots:
 
     void on_actionOpen_triggered();
 
+    void playCurrentItem();
+
+
 private:
     Ui::MainWindow *ui;
 
@@ -54,5 +57,7 @@ private:
     QMediaPlayer *mediaPlayer;
     QAudioOutput *audioOutput;
     QVideoWidget *videoWidget;
+
+    int currentItem;
 };
 #endif // MAINWINDOW_H

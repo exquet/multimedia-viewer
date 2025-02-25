@@ -90,7 +90,7 @@ bgcolor: gray;
       </size>
      </property>
      <property name="text">
-      <string>PushButton</string>
+      <string>B</string>
      </property>
     </widget>
     <widget class="QPushButton" name="playButton">
@@ -107,7 +107,7 @@ bgcolor: gray;
       </size>
      </property>
      <property name="text">
-      <string>PushButton</string>
+      <string>Pl</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pauseButton">
@@ -124,7 +124,7 @@ bgcolor: gray;
       </size>
      </property>
      <property name="text">
-      <string>PushButton</string>
+      <string>Pa</string>
      </property>
     </widget>
     <widget class="QPushButton" name="nextButton">
@@ -141,7 +141,7 @@ bgcolor: gray;
       </size>
      </property>
      <property name="text">
-      <string>PushButton</string>
+      <string>N</string>
      </property>
     </widget>
    </widget>
