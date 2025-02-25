@@ -34,7 +34,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>10</y>
+      <y>30</y>
       <width>640</width>
       <height>480</height>
      </rect>
@@ -144,6 +144,25 @@ bgcolor: gray;
       <string>N</string>
      </property>
     </widget>
+   </widget>
+   <widget class="QLabel" name="fileNameLabel">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>0</y>
+      <width>641</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe MDL2 Assets</family>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>File name</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

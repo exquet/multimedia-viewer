@@ -34,6 +34,9 @@ void MainWindow::on_nextButton_clicked()
     if (currentItem < ui->filesList->count() - 1) {
         ui->filesList->setCurrentRow(currentItem + 1);
         playCurrentItem();
+
+        QString name = ui->filesList->currentItem()->text();
+        ui->fileNameLabel->setText(name);
     }
 }
 
@@ -47,6 +50,9 @@ void MainWindow::on_pauseButton_clicked()
 void MainWindow::on_playButton_clicked()
 {
     mediaPlayer->play();
+
+    QString name = ui->filesList->currentItem()->text();
+    ui->fileNameLabel->setText(name);
 }
 
 
@@ -56,6 +62,9 @@ void MainWindow::on_backButton_clicked()
     if (currentRow > 0) {
         ui->filesList->setCurrentRow(currentRow - 1);
         playCurrentItem();
+
+        QString name = ui->filesList->currentItem()->text();
+        ui->fileNameLabel->setText(name);
     }
 }
 
@@ -70,6 +79,9 @@ void MainWindow::on_filesList_itemClicked(QListWidgetItem *item)
 {
     QString filePath = item->data(Qt::UserRole).toString(); // код извлекает путь к файлу
     mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
+
+    QString name = ui->filesList->currentItem()->text();
+    ui->fileNameLabel->setText(name);
 }
 
 
