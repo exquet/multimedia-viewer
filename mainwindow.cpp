@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->vidWidget->setLayout(layout);
 
     videoWidget->show();
+
+    audioOutput->setVolume(50);
 }
 
 MainWindow::~MainWindow()
@@ -49,10 +51,15 @@ void MainWindow::on_pauseButton_clicked()
 
 void MainWindow::on_playButton_clicked()
 {
-    mediaPlayer->play();
+    if (ui->filesList->currentItem() == nullptr) {
+        return;
+    }
+    else {
+        mediaPlayer->play();
 
-    QString name = ui->filesList->currentItem()->text();
-    ui->fileNameLabel->setText(name);
+        QString name = ui->filesList->currentItem()->text();
+        ui->fileNameLabel->setText(name);
+    }
 }
 
 
