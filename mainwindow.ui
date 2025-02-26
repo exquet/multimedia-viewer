@@ -19,6 +19,13 @@
   <property name="windowTitle">
    <string>exqumedia</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #2D2D30;
+    color: #E1E1E1;
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QListWidget" name="filesList">
     <property name="geometry">
@@ -28,6 +35,31 @@
       <width>101</width>
       <height>581</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QListWidget {
+    background-color: #252526;
+    border: 1px solid #3F3F46;
+    border-radius: 3px;
+    padding: 2px;
+}
+
+QListWidget::item {
+    height: 25px;
+    padding: 2px;
+    color: #E1E1E1;
+}
+
+QListWidget::item:selected {
+    background-color: #3F3F3F;
+    color: #FFFFFF;
+    border-radius: 2px;
+}
+
+QListWidget::item:hover {
+    background-color: #333333;
+    border-radius: 2px;
+}</string>
     </property>
    </widget>
    <widget class="QWidget" name="vidWidget" native="true">
@@ -40,8 +72,9 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QWidget {
-bgcolor: gray;
+     <string notr="true">QVideoWidget {
+    background-color: #000000;
+    border: 1px solid #3F3F46;
 }</string>
     </property>
    </widget>
@@ -50,9 +83,61 @@ bgcolor: gray;
      <rect>
       <x>120</x>
       <y>535</y>
-      <width>461</width>
+      <width>431</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QSlider::groove:horizontal {
+    border: none;
+    height: 5px;
+    background-color: #333337;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background-color: #0078D7;
+    border: none;
+    width: 12px;
+    margin: -4px 0;
+    border-radius: 6px;
+}
+
+QSlider::add-page:horizontal {
+    background-color: #333337;
+    border-radius: 2px;
+}
+
+QSlider::sub-page:horizontal {
+    background-color: #0078D7;
+    border-radius: 2px;
+}
+
+/* Volume slider - can be vertical */
+QSlider::groove:vertical {
+    border: none;
+    width: 5px;
+    background-color: #333337;
+    border-radius: 2px;
+}
+
+QSlider::handle:vertical {
+    background-color: #0078D7;
+    border: none;
+    height: 12px;
+    margin: 0 -4px;
+    border-radius: 6px;
+}
+
+QSlider::add-page:vertical {
+    background-color: #0078D7;
+    border-radius: 2px;
+}
+
+QSlider::sub-page:vertical {
+    background-color: #333337;
+    border-radius: 2px;
+}</string>
     </property>
     <property name="minimum">
      <number>1</number>
@@ -67,87 +152,6 @@ bgcolor: gray;
      <enum>Qt::Orientation::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QSplitter" name="splitter">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>525</y>
-      <width>152</width>
-      <height>35</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Horizontal</enum>
-    </property>
-    <widget class="QPushButton" name="backButton">
-     <property name="minimumSize">
-      <size>
-       <width>35</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>35</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>B</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="playButton">
-     <property name="minimumSize">
-      <size>
-       <width>35</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>35</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Pl</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pauseButton">
-     <property name="minimumSize">
-      <size>
-       <width>35</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>35</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Pa</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="nextButton">
-     <property name="minimumSize">
-      <size>
-       <width>35</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>35</width>
-       <height>35</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>N</string>
-     </property>
-    </widget>
-   </widget>
    <widget class="QLabel" name="fileNameLabel">
     <property name="geometry">
      <rect>
@@ -159,12 +163,213 @@ bgcolor: gray;
     </property>
     <property name="font">
      <font>
-      <family>Segoe MDL2 Assets</family>
-      <pointsize>15</pointsize>
+      <family>Segoe UI</family>
+      <pointsize>17</pointsize>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    color: #E1E1E1;
+}</string>
     </property>
     <property name="text">
      <string>File name</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>525</y>
+      <width>54</width>
+      <height>42</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>54</width>
+      <height>42</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>35</width>
+      <height>35</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: #3E3E42;
+    color: #E1E1E1;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+QPushButton:hover {
+    background-color: #45454A;
+}
+
+QPushButton:pressed {
+    background-color: #333337;
+}
+
+QPushButton:disabled {
+    background-color: #2D2D30;
+    color: #656565;
+}</string>
+    </property>
+    <property name="text">
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="nextButton">
+    <property name="geometry">
+     <rect>
+      <x>740</x>
+      <y>525</y>
+      <width>54</width>
+      <height>42</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>54</width>
+      <height>42</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>35</width>
+      <height>35</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: #3E3E42;
+    color: #E1E1E1;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+QPushButton:hover {
+    background-color: #45454A;
+}
+
+QPushButton:pressed {
+    background-color: #333337;
+}
+
+QPushButton:disabled {
+    background-color: #2D2D30;
+    color: #656565;
+}</string>
+    </property>
+    <property name="text">
+     <string>N</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="playButton">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>525</y>
+      <width>54</width>
+      <height>42</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>54</width>
+      <height>42</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>35</width>
+      <height>35</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: #3E3E42;
+    color: #E1E1E1;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+QPushButton:hover {
+    background-color: #45454A;
+}
+
+QPushButton:pressed {
+    background-color: #333337;
+}
+
+QPushButton:disabled {
+    background-color: #2D2D30;
+    color: #656565;
+}</string>
+    </property>
+    <property name="text">
+     <string>Pl</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pauseButton">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>525</y>
+      <width>54</width>
+      <height>42</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>54</width>
+      <height>42</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>35</width>
+      <height>35</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: #3E3E42;
+    color: #E1E1E1;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+QPushButton:hover {
+    background-color: #45454A;
+}
+
+QPushButton:pressed {
+    background-color: #333337;
+}
+
+QPushButton:disabled {
+    background-color: #2D2D30;
+    color: #656565;
+}</string>
+    </property>
+    <property name="text">
+     <string>Pa</string>
     </property>
    </widget>
   </widget>
@@ -174,8 +379,21 @@ bgcolor: gray;
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QMenuBar {
+    background-color: #1E1E1E;
+    border-bottom: 1px solid #3F3F46;
+}
+QMenuBar::item {
+    background-color: transparent;
+    padding: 5px 10px;
+}
+QMenuBar::item:selected {
+    background-color: #3E3E40;
+}</string>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
