@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     videoWidget->show();
 
     audioOutput->setVolume(50);
+
+    ui->filesList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->filesList, &QListWidget::customContextMenuRequested, this, &MainWindow::showContextMenu);
 }
 
 MainWindow::~MainWindow()
@@ -115,3 +118,43 @@ void MainWindow::playCurrentItem() {
     }
 }
 
+void MainWindow::showContextMenu(const QPoint &point) {
+    // проверка на выбранный эллемент
+    QListWidgetItem *item = ui->filesList->itemAt(point);
+    if(!item){return;}
+
+    QMenu contextMenu(tr("Выберете действие"), this);
+    QAction *deleteAction = contextMenu.addAction(tr("Удалить"));
+
+    // преобразует эти локальные координаты в глобальные координаты экрана и отображат меню
+    QAction *selectedAction = contextMenu.exec(ui->filesList->mapToGlobal(point));
+
+    if (selectedAction == deleteAction) {
+        deleteSelectedItem();
+    }
+}
+
+void MainWindow::deleteSelectedItem() {
+    int currentRow = ui->filesList->currentRow();
+    if (currentRow >= 0) {
+        delete ui->filesList->takeItem(currentRow);
+
+        if (ui->filesList->count() == 0) {
+            mediaPlayer->stop();
+            ui->fileNameLabel->setText("File name");
+        }
+        else if (currentRow < ui->filesList->count()) {
+            ui->filesList->setCurrentRow(currentRow);
+            playCurrentItem();
+            QString name = ui->filesList->currentItem()->text();
+            ui->fileNameLabel->setText(name);
+        }
+        else if (currentRow == ui ->filesList->count() && ui->filesList->count() > 0) {
+            ui->filesList->setCurrentRow(currentRow-1);
+            playCurrentItem();
+            QString name = ui->filesList->currentItem()->text();
+            ui->fileNameLabel->setText(name);
+        }
+
+    }
+}

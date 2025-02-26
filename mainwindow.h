@@ -14,6 +14,8 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QUrl>
+#include <QMenu>
+#include <QAction>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -47,7 +49,8 @@ private slots:
     void on_actionOpen_triggered();
 
     void playCurrentItem();
-
+    void showContextMenu(const QPoint &point);
+    void deleteSelectedItem();
 
 private:
     Ui::MainWindow *ui;
