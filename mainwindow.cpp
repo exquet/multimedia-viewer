@@ -35,7 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
     positionSlider->setRange(0, 0);
     connect(positionSlider, &QSlider::sliderMoved, this, &MainWindow::setPosition);
 
+    // соединение сигнала изменения позиции со слотом updatePosition
     connect(mediaPlayer, &QMediaPlayer::positionChanged, this, &MainWindow::updatePosition);
+    // соединение сигнала изменения длительности со слотом updateDuration
     connect(mediaPlayer, &QMediaPlayer::durationChanged, this, &MainWindow::updateDuration);
 }
 
@@ -172,9 +174,19 @@ void MainWindow::deleteSelectedItem() {
 }
 
 void MainWindow::updatePosition(qint64 position) {
+    // если пользователь не перетаскивает Slider то обновляем его позицию
     if (!positionSlider->isSliderDown()) {
         positionSlider->setValue(static_cast<int>(position));
     }
+
+    QTime currentTime(0, 0);
+    currentTime = currentTime.addMSecs(static_cast<int>(position)); // текущая позиция
+    QTime totalTime(0, 0);
+    totalTime = totalTime.addMSecs(static_cast<int>(duration)); // общая длительность
+
+    //если длительность > 1 часа, то "h:mm:ss", иначе "m:ss"
+    QString format = (duration > 3600000) ? "h:mm:ss" : "m:ss";
+    timeLabel->setText(currentTime.toString(format) + " / " + totalTime.toString(format));
 }
 
 void MainWindow::updateDuration(qint64 newDuration) {
