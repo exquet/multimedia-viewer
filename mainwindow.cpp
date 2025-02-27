@@ -5,6 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , currentItem(0)
+    , duration(0)
 {
     ui->setupUi(this);
 
@@ -26,6 +27,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->filesList->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->filesList, &QListWidget::customContextMenuRequested, this, &MainWindow::showContextMenu);
+
+    timeLabel = ui->timeLabel;
+    timeLabel->setText("0:00 / 0:00");
+
+    positionSlider = ui->timeSlider;
+    positionSlider->setRange(0, 0);
+    connect(positionSlider, &QSlider::sliderMoved, this, &MainWindow::setPosition);
+
+    connect(mediaPlayer, &QMediaPlayer::positionChanged, this, &MainWindow::updatePosition);
+    connect(mediaPlayer, &QMediaPlayer::durationChanged, this, &MainWindow::updateDuration);
 }
 
 MainWindow::~MainWindow()
@@ -115,6 +126,7 @@ void MainWindow::playCurrentItem() {
     if (currentItem) {
         QString filePath = currentItem->data(Qt::UserRole).toString();
         mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
+        mediaPlayer->play();
     }
 }
 
@@ -157,4 +169,19 @@ void MainWindow::deleteSelectedItem() {
         }
 
     }
+}
+
+void MainWindow::updatePosition(qint64 position) {
+    if (!positionSlider->isSliderDown()) {
+        positionSlider->setValue(static_cast<int>(position));
+    }
+}
+
+void MainWindow::updateDuration(qint64 newDuration) {
+    duration = newDuration;
+    positionSlider->setRange(0, static_cast<int>(newDuration));
+}
+
+void MainWindow::setPosition(int position) {
+    mediaPlayer->setPosition(position);
 }

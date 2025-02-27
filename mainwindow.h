@@ -16,6 +16,7 @@
 #include <QUrl>
 #include <QMenu>
 #include <QAction>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -51,6 +52,9 @@ private slots:
     void playCurrentItem();
     void showContextMenu(const QPoint &point);
     void deleteSelectedItem();
+    void updatePosition(qint64 position);
+    void updateDuration(qint64 duration);
+    void setPosition(int position);
 
 private:
     Ui::MainWindow *ui;
@@ -62,5 +66,8 @@ private:
     QVideoWidget *videoWidget;
 
     int currentItem;
+    QLabel *timeLabel;
+    QSlider *positionSlider;
+    qint64 duration; // длительность медиа
 };
 #endif // MAINWINDOW_H
