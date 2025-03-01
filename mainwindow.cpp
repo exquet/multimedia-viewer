@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     audioOutput = new QAudioOutput(this); // объект аудиовыхода
     mediaPlayer = new QMediaPlayer(this); // медиаплеер для управления воспроизведением
     videoWidget = new QVideoWidget(this); // виджет для отображения видео
+    videoWidget->installEventFilter(this);
 
     mediaPlayer->setAudioOutput(audioOutput); // устанавливаем аудиовыход для воспроизведения звука
     mediaPlayer->setVideoOutput(videoWidget); // устанавливаем виджет для вывода видео
@@ -212,14 +213,57 @@ void MainWindow::on_fullScreenButton_clicked()
         videoWidget->showFullScreen();
         isFullScreen = true;
     } else {
-        videoWidget->setWindowFlags(Qt::Widget); // возвращает флаг виджета а не окна
-        QVBoxLayout *layout = new QVBoxLayout(ui->vidWidget); // новый компоновщик
-        layout->addWidget(videoWidget); // видео виджет в новый компоновщик
-        ui->vidWidget->setLayout(layout);
-        videoWidget->show();
+        exitFullScreen();
+    }
+}
 
-        setWindowState(windowState() & ~Qt::WindowFullScreen); // убирает флаг полноэкранного состояния
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Escape && isFullScreen) {
+        on_fullScreenButton_clicked();
+    } else {
+        QMainWindow::keyPressEvent(event);
+    }
+}
+
+void MainWindow::exitFullScreen()
+{
+    if (isFullScreen) {
+        mediaPlayer->pause();
+        // Скрываем виджет перед изменением свойств
+        videoWidget->hide();
+        // Удаляем флаги окна и возвращаем виджет в контейнер
+        videoWidget->setWindowFlags(Qt::Widget);
+        // Важно: удаляем старый лейаут перед созданием нового
+        if (ui->vidWidget->layout()) {
+            delete ui->vidWidget->layout();
+        }
+        // Создаем новый лейаут и добавляем в него видеовиджет
+        QVBoxLayout *layout = new QVBoxLayout(ui->vidWidget);
+        layout->addWidget(videoWidget);
+        layout->setContentsMargins(0, 0, 0, 0);
+        ui->vidWidget->setLayout(layout);
+        // Показываем виджет
+        videoWidget->show();
+        // Восстанавливаем обычное состояние окна
+        setWindowState(windowState() & ~Qt::WindowFullScreen);
+        // Продолжаем воспроизведение
+        mediaPlayer->play();
+
         isFullScreen = false;
     }
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == videoWidget) {
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+            if (keyEvent->key() == Qt::Key_Escape && isFullScreen) {
+                exitFullScreen();
+                return true;
+            }
+        }
+    }
+    return QMainWindow::eventFilter(obj, event);
 }
 
