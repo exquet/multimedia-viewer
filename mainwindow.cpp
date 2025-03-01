@@ -229,7 +229,6 @@ void MainWindow::exitFullScreen()
 {
     if (isFullScreen) {
         mediaPlayer->pause();
-        // Скрываем виджет перед изменением свойств
         videoWidget->hide();
         // Удаляем флаги окна и возвращаем виджет в контейнер
         videoWidget->setWindowFlags(Qt::Widget);
@@ -240,15 +239,11 @@ void MainWindow::exitFullScreen()
         // Создаем новый лейаут и добавляем в него видеовиджет
         QVBoxLayout *layout = new QVBoxLayout(ui->vidWidget);
         layout->addWidget(videoWidget);
-        layout->setContentsMargins(0, 0, 0, 0);
         ui->vidWidget->setLayout(layout);
-        // Показываем виджет
         videoWidget->show();
         // Восстанавливаем обычное состояние окна
         setWindowState(windowState() & ~Qt::WindowFullScreen);
-        // Продолжаем воспроизведение
         mediaPlayer->play();
-
         isFullScreen = false;
     }
 }
