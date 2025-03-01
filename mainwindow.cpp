@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , currentItem(0)
     , duration(0)
+    , isFullScreen(false)
 {
     ui->setupUi(this);
 
@@ -39,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mediaPlayer, &QMediaPlayer::positionChanged, this, &MainWindow::updatePosition);
     // соединение сигнала изменения длительности со слотом updateDuration
     connect(mediaPlayer, &QMediaPlayer::durationChanged, this, &MainWindow::updateDuration);
+
 }
 
 MainWindow::~MainWindow()
@@ -197,3 +199,27 @@ void MainWindow::updateDuration(qint64 newDuration) {
 void MainWindow::setPosition(int position) {
     mediaPlayer->setPosition(position);
 }
+
+void MainWindow::on_fullScreenButton_clicked()
+{
+    if (!isFullScreen) {
+        // сохраняем нормальное состояние окна
+        setWindowState(windowState() | Qt::WindowFullScreen);
+        // выводим видеовиджет поверх остальных элементов и на всё окно
+        videoWidget->setParent(nullptr); // "отсоединение" от  изначального QWidget
+        videoWidget->setWindowFlags(Qt::Window); // ::Window - будет ввести себя как самостоятельное окно
+
+        videoWidget->showFullScreen();
+        isFullScreen = true;
+    } else {
+        videoWidget->setWindowFlags(Qt::Widget); // возвращает флаг виджета а не окна
+        QVBoxLayout *layout = new QVBoxLayout(ui->vidWidget); // новый компоновщик
+        layout->addWidget(videoWidget); // видео виджет в новый компоновщик
+        ui->vidWidget->setLayout(layout);
+        videoWidget->show();
+
+        setWindowState(windowState() & ~Qt::WindowFullScreen); // убирает флаг полноэкранного состояния
+        isFullScreen = false;
+    }
+}
+

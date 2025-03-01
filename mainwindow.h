@@ -56,6 +56,8 @@ private slots:
     void updateDuration(qint64 duration);
     void setPosition(int position);
 
+    void on_fullScreenButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -69,5 +71,6 @@ private:
     QLabel *timeLabel;
     QSlider *positionSlider;
     qint64 duration; // длительность медиа
+    bool isFullScreen;
 };
 #endif // MAINWINDOW_H

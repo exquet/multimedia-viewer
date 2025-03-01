@@ -377,7 +377,7 @@ QPushButton:disabled {
      <rect>
       <x>125</x>
       <y>502</y>
-      <width>601</width>
+      <width>561</width>
       <height>16</height>
      </rect>
     </property>
@@ -420,7 +420,7 @@ QSlider::sub-page:horizontal {
    <widget class="QLabel" name="timeLabel">
     <property name="geometry">
      <rect>
-      <x>730</x>
+      <x>700</x>
       <y>500</y>
       <width>71</width>
       <height>21</height>
@@ -428,6 +428,41 @@ QSlider::sub-page:horizontal {
     </property>
     <property name="text">
      <string>Time/Time</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fullScreenButton">
+    <property name="geometry">
+     <rect>
+      <x>765</x>
+      <y>503</y>
+      <width>18</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: #3E3E42;
+    color: #E1E1E1;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+}
+
+QPushButton:hover {
+    background-color: #45454A;
+}
+
+QPushButton:pressed {
+    background-color: #333337;
+}
+
+QPushButton:disabled {
+    background-color: #2D2D30;
+    color: #656565;
+}</string>
+    </property>
+    <property name="text">
+     <string>F</string>
     </property>
    </widget>
   </widget>
