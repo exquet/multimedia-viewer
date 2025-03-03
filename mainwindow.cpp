@@ -10,6 +10,22 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    //icons
+    QIcon logoIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/logo.png");
+    MainWindow::setWindowIcon(logoIcon);
+    QIcon fileIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/file.png");
+    ui->actionOpen->setIcon(fileIcon);
+    QIcon playIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/play.png");
+    ui->playButton->setIcon(playIcon);
+    QIcon pauseIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/pause.png");
+    ui->pauseButton->setIcon(pauseIcon);
+    QIcon backIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/back.png");
+    ui->backButton->setIcon(backIcon);
+    QIcon nextIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/next.png");
+    ui->nextButton->setIcon(nextIcon);
+    QIcon fsIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/fullscreen.png");
+    ui->fullScreenButton->setIcon(fsIcon);
+
     audioOutput = new QAudioOutput(this); // объект аудиовыхода
     mediaPlayer = new QMediaPlayer(this); // медиаплеер для управления воспроизведением
     videoWidget = new QVideoWidget(this); // виджет для отображения видео

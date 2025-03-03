@@ -219,7 +219,7 @@ QPushButton:disabled {
 }</string>
              </property>
              <property name="text">
-              <string>F</string>
+              <string/>
              </property>
             </widget>
            </widget>
@@ -345,7 +345,7 @@ QPushButton:disabled {
 }</string>
              </property>
              <property name="text">
-              <string>B</string>
+              <string/>
              </property>
             </widget>
             <widget class="QPushButton" name="playButton">
@@ -386,7 +386,7 @@ QPushButton:disabled {
 }</string>
              </property>
              <property name="text">
-              <string>Pl</string>
+              <string/>
              </property>
             </widget>
             <widget class="QPushButton" name="pauseButton">
@@ -427,7 +427,7 @@ QPushButton:disabled {
 }</string>
              </property>
              <property name="text">
-              <string>Pa</string>
+              <string/>
              </property>
             </widget>
             <widget class="QPushButton" name="nextButton">
@@ -468,7 +468,7 @@ QPushButton:disabled {
 }</string>
              </property>
              <property name="text">
-              <string>N</string>
+              <string/>
              </property>
             </widget>
            </widget>
