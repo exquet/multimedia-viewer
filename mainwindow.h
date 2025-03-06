@@ -19,6 +19,8 @@
 #include <QLabel>
 #include <QKeyEvent>
 #include <Qicon>
+#include <QPixmap>
+#include <QImageReader>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -65,11 +67,17 @@ private:
     QMediaPlayer *mediaPlayer;
     QAudioOutput *audioOutput;
     QVideoWidget *videoWidget;
-
     int currentItem;
     QLabel *timeLabel;
     QSlider *positionSlider;
     qint64 duration; // длительность медиа
     bool isFullScreen;
+    QLabel *imageLabel;
+    bool isImage;
+    QString currentImagePath;  // Путь к текущему файлу
+
+    void setupImageDisplay();  // Настройка отображения изображений
+    bool isImageFile(const QString &filePath);
+    void displayFile(const QString &filePath);  // Отображение файла (видео или изображение)
 };
 #endif // MAINWINDOW_H
