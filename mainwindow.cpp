@@ -220,15 +220,27 @@ void MainWindow::setPosition(int position) {
 void MainWindow::on_fullScreenButton_clicked()
 {
     if (!isFullScreen) {
-        // сохраняем нормальное состояние окна
-        setWindowState(windowState() | Qt::WindowFullScreen);
-        // выводим видеовиджет поверх остальных элементов и на всё окно
-        videoWidget->setParent(nullptr); // "отсоединение" от  изначального QWidget
-        videoWidget->setWindowFlags(Qt::Window); // ::Window - будет ввести себя как самостоятельное окно
-
+        // сохранение текущего воспроизведения
+        bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
+        mediaPlayer->pause();
+        // сохранение текущего положения
+        qint64 currentPosition = mediaPlayer->position();
+        mediaPlayer->setVideoOutput(nullptr);
+        // отсоединение videowidget
+        videoWidget->hide();
+        videoWidget->setParent(nullptr);
+        videoWidget->setWindowFlags(Qt::Window);
+        // пареподключение videowidget
+        mediaPlayer->setVideoOutput(videoWidget);
         videoWidget->showFullScreen();
+        // возобновляем воспроизведение
+        mediaPlayer->setPosition(currentPosition);
+        if (wasPlaying) {
+            mediaPlayer->play();
+        }
         isFullScreen = true;
-    } else {
+    }
+    else {
         exitFullScreen();
     }
 }
@@ -244,22 +256,32 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 void MainWindow::exitFullScreen()
 {
     if (isFullScreen) {
+        bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
         mediaPlayer->pause();
+        qint64 currentPosition = mediaPlayer->position();
+        mediaPlayer->setVideoOutput(nullptr);
         videoWidget->hide();
-        // Удаляем флаги окна и возвращаем виджет в контейнер
         videoWidget->setWindowFlags(Qt::Widget);
-        // Важно: удаляем старый лейаут перед созданием нового
-        if (ui->vidWidget->layout()) {
-            delete ui->vidWidget->layout();
+        // удаление и создание videowidget
+        delete videoWidget;
+        videoWidget = new QVideoWidget(this);
+        videoWidget->installEventFilter(this);
+        // удаление старого слоя
+        QLayout* oldLayout = ui->vidWidget->layout();
+        if (oldLayout) {
+            delete oldLayout;
         }
-        // Создаем новый лейаут и добавляем в него видеовиджет
-        QVBoxLayout *layout = new QVBoxLayout(ui->vidWidget);
+        // создание нового слоя
+        QVBoxLayout* layout = new QVBoxLayout(ui->vidWidget);
+        layout->setContentsMargins(0, 0, 0, 0);
         layout->addWidget(videoWidget);
-        ui->vidWidget->setLayout(layout);
+        mediaPlayer->setVideoOutput(videoWidget);
         videoWidget->show();
-        // Восстанавливаем обычное состояние окна
+        mediaPlayer->setPosition(currentPosition);
+        if (wasPlaying) {
+            mediaPlayer->play();
+        }
         setWindowState(windowState() & ~Qt::WindowFullScreen);
-        mediaPlayer->play();
         isFullScreen = false;
     }
 }

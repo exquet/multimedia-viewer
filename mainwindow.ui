@@ -33,7 +33,7 @@
       <item>
        <widget class="QListWidget" name="filesList">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -49,6 +49,13 @@
           <width>100</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>9</pointsize>
+          <bold>true</bold>
+         </font>
         </property>
         <property name="styleSheet">
          <string notr="true">QListWidget {
@@ -221,6 +228,12 @@ QPushButton:disabled {
              <property name="text">
               <string/>
              </property>
+             <property name="iconSize">
+              <size>
+               <width>18</width>
+               <height>18</height>
+              </size>
+             </property>
             </widget>
            </widget>
           </item>
@@ -347,6 +360,12 @@ QPushButton:disabled {
              <property name="text">
               <string/>
              </property>
+             <property name="iconSize">
+              <size>
+               <width>48</width>
+               <height>48</height>
+              </size>
+             </property>
             </widget>
             <widget class="QPushButton" name="playButton">
              <property name="minimumSize">
@@ -387,6 +406,12 @@ QPushButton:disabled {
              </property>
              <property name="text">
               <string/>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
              </property>
             </widget>
             <widget class="QPushButton" name="pauseButton">
@@ -429,6 +454,12 @@ QPushButton:disabled {
              <property name="text">
               <string/>
              </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
+             </property>
             </widget>
             <widget class="QPushButton" name="nextButton">
              <property name="minimumSize">
@@ -469,6 +500,12 @@ QPushButton:disabled {
              </property>
              <property name="text">
               <string/>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>48</width>
+               <height>48</height>
+              </size>
              </property>
             </widget>
            </widget>
