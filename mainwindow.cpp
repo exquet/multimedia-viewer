@@ -40,8 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(videoWidget);
     ui->vidWidget->setLayout(layout);
 
-    videoWidget->show();
-
     audioOutput->setVolume(50);
 
     ui->filesList->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -59,11 +57,22 @@ MainWindow::MainWindow(QWidget *parent)
     // соединение сигнала изменения длительности со слотом updateDuration
     connect(mediaPlayer, &QMediaPlayer::durationChanged, this, &MainWindow::updateDuration);
 
-
     imageLabel = ui->imageLabel;
-    imageLabel->setAlignment(Qt::AlignCenter); // выравнивание
-    imageLabel->setScaledContents(true); // масшатабирование
+    imageLabel->setAlignment(Qt::AlignCenter);
+    imageLabel->setScaledContents(false); // Меняем на false и используем масштабирование вручную
+    imageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     imageLabel->hide();
+
+    //start
+    ui->vidWidget->hide();
+    ui->timeSlider->hide();
+    ui->volumeSlider->hide();
+    ui->timeLabel->hide();
+    ui->backButton->hide();
+    ui->nextButton->hide();
+    ui->pauseButton->hide();
+    ui->playButton->hide();
+    ui->fullScreenButton->hide();
 
 }
 
@@ -126,13 +135,23 @@ void MainWindow::on_volumeSlider_valueChanged(int value)
 
 void MainWindow::on_filesList_itemClicked(QListWidgetItem *item)
 {
-    QString filePath = item->data(Qt::UserRole).toString(); // код извлекает путь к файлу
+    QString filePath = item->data(Qt::UserRole).toString();
     if (isImageFile(filePath)) {
         displayFile(filePath);
     }
     else{
         imageLabel->hide();
+        ui->vidWidget->show();
         videoWidget->show();
+        ui->timeSlider->show();
+        ui->volumeSlider->show();
+        ui->timeLabel->show();
+        ui->backButton->show();
+        ui->nextButton->show();
+        ui->pauseButton->show();
+        ui->playButton->show();
+        ui->fullScreenButton->show();
+
         mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
         mediaPlayer->play();
     }
@@ -145,24 +164,61 @@ void MainWindow::on_filesList_itemClicked(QListWidgetItem *item)
 void MainWindow::on_actionOpen_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть медиа"), "",
-                            tr("Video (*.mp4 *.avi *.mkv);;All files (*.*);; Images (*.jpg *.jpeg *.png"));
+                                                    tr("Video (*.mp4 *.avi *.mkv);;All files (*.*);; Images (*.jpg *.jpeg *.png"));
+
+    if (fileName.isEmpty()) {
+        return;
+    }
 
     // создание объекта QFileInfo с использованием пути к файлу fileName
     QListWidgetItem *item = new QListWidgetItem(QFileInfo(fileName).fileName(), ui->filesList);
     item->setData(Qt::UserRole, fileName); // установка дополнительных сведений о файле
     ui->filesList->addItem(item);
+    ui->filesList->setCurrentItem(item); // Выбираем только что добавленный элемент
 
     if (isImageFile(fileName)) {
-        displayFile(fileName);
+        // Скрываем элементы управления видео
+        ui->vidWidget->hide();
+        ui->timeSlider->hide();
+        ui->volumeSlider->hide();
+        ui->timeLabel->hide();
+        ui->backButton->hide();
+        ui->nextButton->hide();
+        ui->pauseButton->hide();
+        ui->playButton->hide();
+        ui->fullScreenButton->show();
+
+        // Показываем и настраиваем imageLabel
+        imageLabel->show();
+        currentImagePath = fileName;
+        currentPixmap = QPixmap(fileName);
+        if (!currentPixmap.isNull()) {
+            imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
+                                                       Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+        mediaPlayer->stop(); // Останавливаем плеер, если он воспроизводил что-то
     }
     else {
         // метод QMediaPlayer устанавливающий источник медиа для воспроизведения.
         mediaPlayer->setSource(QUrl::fromLocalFile(fileName));
         imageLabel->hide();
+
+        ui->vidWidget->show();
         videoWidget->show();
+        ui->timeSlider->show();
+        ui->volumeSlider->show();
+        ui->timeLabel->show();
+        ui->backButton->show();
+        ui->nextButton->show();
+        ui->pauseButton->show();
+        ui->playButton->show();
+        ui->fullScreenButton->show();
+
+        mediaPlayer->play();
     }
 
-    if (fileName.isEmpty()) {return;}
+    QString name = QFileInfo(fileName).fileName();
+    ui->fileNameLabel->setText(name);
 }
 
 void MainWindow::playCurrentItem() {
@@ -333,26 +389,80 @@ bool MainWindow::isImageFile(const QString &filePath) {
 }
 
 void MainWindow::displayFile(const QString &filePath) {
-    currentImagePath = filePath;
     isImage = isImageFile(filePath);
-    if (isImage) {
-        videoWidget->hide();
-        mediaPlayer->stop();
 
-        QPixmap pixmap(filePath);
-        imageLabel->setPixmap(pixmap.scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        imageLabel->setScaledContents(true);
-        imageLabel->show();
+    if (isImage) {
+        // Останавливаем видеоплеер и скрываем видеовиджет
+        mediaPlayer->stop();
+        videoWidget->hide();
+        ui->vidWidget->hide();
+
+        // Скрываем элементы управления для видео
+        ui->timeSlider->hide();
+        ui->volumeSlider->hide();
+        ui->timeLabel->hide();
+        ui->backButton->hide();
+        ui->nextButton->hide();
+        ui->pauseButton->hide();
+        ui->playButton->hide();
+        ui->fullScreenButton->show();
+
+        // Загружаем и отображаем изображение
+        currentImagePath = filePath;
+        currentPixmap = QPixmap(filePath);
+
+        if (!currentPixmap.isNull()) {
+            imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
+                                                       Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            imageLabel->show();
+        } else {
+            qDebug() << "Ошибка загрузки изображения:" << filePath;
+        }
     }
     else {
+        // Скрываем изображение
         imageLabel->hide();
+
+        // Показываем видеовиджет и элементы управления
+        ui->vidWidget->show();
         videoWidget->show();
+        ui->timeSlider->show();
+        ui->volumeSlider->show();
+        ui->timeLabel->show();
+        ui->backButton->show();
+        ui->nextButton->show();
+        ui->pauseButton->show();
+        ui->playButton->show();
+        ui->fullScreenButton->show();
+
+        // Устанавливаем источник и начинаем воспроизведение
         mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
-
-        QString name = QFileInfo(filePath).fileName();
-        ui->fileNameLabel->setText(name);
-
         mediaPlayer->play();
     }
+
+    // Обновляем имя файла
+    QString name = QFileInfo(filePath).fileName();
+    ui->fileNameLabel->setText(name);
 }
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    if (isImage && !currentImagePath.isEmpty()) {
+        QPixmap pixmap(currentImagePath);
+        if (!pixmap.isNull()) {
+            imageLabel->setPixmap(pixmap.scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+    }
+    QMainWindow::resizeEvent(event);
+}
+
+void MainWindow::updateImageDisplay() {
+    if (!currentPixmap.isNull()) {
+        // Используем актуальный размер imageLabel для масштабирования
+        imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
+                                                   Qt::KeepAspectRatio,
+                                                   Qt::SmoothTransformation));
+    }
+}
+
+
 

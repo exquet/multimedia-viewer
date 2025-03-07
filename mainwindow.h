@@ -21,6 +21,7 @@
 #include <Qicon>
 #include <QPixmap>
 #include <QImageReader>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -39,6 +40,7 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private slots:
 
@@ -58,6 +60,7 @@ private slots:
     void setPosition(int position);
     void on_fullScreenButton_clicked();
     void exitFullScreen();
+    void updateImageDisplay();
 
 private:
     Ui::MainWindow *ui;
@@ -75,6 +78,7 @@ private:
     QLabel *imageLabel;
     bool isImage;
     QString currentImagePath;  // Путь к текущему файлу
+    QPixmap currentPixmap;
 
     void setupImageDisplay();  // Настройка отображения изображений
     bool isImageFile(const QString &filePath);
