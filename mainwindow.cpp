@@ -300,27 +300,29 @@ void MainWindow::setPosition(int position) {
 void MainWindow::on_fullScreenButton_clicked()
 {
     if (!isFullScreen) {
-        // сохранение текущего воспроизведения
-        bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
-        mediaPlayer->pause();
-        // сохранение текущего положения
-        qint64 currentPosition = mediaPlayer->position();
-        mediaPlayer->setVideoOutput(nullptr);
-        // отсоединение videowidget
-        videoWidget->hide();
-        videoWidget->setParent(nullptr);
-        videoWidget->setWindowFlags(Qt::Window);
-        // пареподключение videowidget
-        mediaPlayer->setVideoOutput(videoWidget);
-        videoWidget->showFullScreen();
-        // возобновляем воспроизведение
-        mediaPlayer->setPosition(currentPosition);
-        if (wasPlaying) {
-            mediaPlayer->play();
+        if (isImage) {
+            // Handle fullscreen for images
+            imageLabel->setWindowFlags(Qt::Window);
+            imageLabel->showFullScreen();
+            isFullScreen = true;
+        } else {
+            // Your existing code for videos
+            bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
+            mediaPlayer->pause();
+            qint64 currentPosition = mediaPlayer->position();
+            mediaPlayer->setVideoOutput(nullptr);
+            videoWidget->hide();
+            videoWidget->setParent(nullptr);
+            videoWidget->setWindowFlags(Qt::Window);
+            mediaPlayer->setVideoOutput(videoWidget);
+            videoWidget->showFullScreen();
+            mediaPlayer->setPosition(currentPosition);
+            if (wasPlaying) {
+                mediaPlayer->play();
+            }
+            isFullScreen = true;
         }
-        isFullScreen = true;
-    }
-    else {
+    } else {
         exitFullScreen();
     }
 }
@@ -336,30 +338,34 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 void MainWindow::exitFullScreen()
 {
     if (isFullScreen) {
-        bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
-        mediaPlayer->pause();
-        qint64 currentPosition = mediaPlayer->position();
-        mediaPlayer->setVideoOutput(nullptr);
-        videoWidget->hide();
-        videoWidget->setWindowFlags(Qt::Widget);
-        // удаление и создание videowidget
-        delete videoWidget;
-        videoWidget = new QVideoWidget(this);
-        videoWidget->installEventFilter(this);
-        // удаление старого слоя
-        QLayout* oldLayout = ui->vidWidget->layout();
-        if (oldLayout) {
-            delete oldLayout;
-        }
-        // создание нового слоя
-        QVBoxLayout* layout = new QVBoxLayout(ui->vidWidget);
-        layout->setContentsMargins(0, 0, 0, 0);
-        layout->addWidget(videoWidget);
-        mediaPlayer->setVideoOutput(videoWidget);
-        videoWidget->show();
-        mediaPlayer->setPosition(currentPosition);
-        if (wasPlaying) {
-            mediaPlayer->play();
+        if (isImage) {
+            // Handle exit fullscreen for images
+            imageLabel->setWindowFlags(Qt::Widget);
+            imageLabel->show();
+        } else {
+            // Your existing code for videos
+            bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
+            mediaPlayer->pause();
+            qint64 currentPosition = mediaPlayer->position();
+            mediaPlayer->setVideoOutput(nullptr);
+            videoWidget->hide();
+            videoWidget->setWindowFlags(Qt::Widget);
+            delete videoWidget;
+            videoWidget = new QVideoWidget(this);
+            videoWidget->installEventFilter(this);
+            QLayout* oldLayout = ui->vidWidget->layout();
+            if (oldLayout) {
+                delete oldLayout;
+            }
+            QVBoxLayout* layout = new QVBoxLayout(ui->vidWidget);
+            layout->setContentsMargins(0, 0, 0, 0);
+            layout->addWidget(videoWidget);
+            mediaPlayer->setVideoOutput(videoWidget);
+            videoWidget->show();
+            mediaPlayer->setPosition(currentPosition);
+            if (wasPlaying) {
+                mediaPlayer->play();
+            }
         }
         setWindowState(windowState() & ~Qt::WindowFullScreen);
         isFullScreen = false;
@@ -411,13 +417,10 @@ void MainWindow::displayFile(const QString &filePath) {
         currentImagePath = filePath;
         currentPixmap = QPixmap(filePath);
 
-        if (!currentPixmap.isNull()) {
-            imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
-                                                       Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            imageLabel->show();
-        } else {
-            qDebug() << "Ошибка загрузки изображения:" << filePath;
-        }
+        imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
+                                                    Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imageLabel->show();
+
     }
     else {
         // Скрываем изображение
