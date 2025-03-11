@@ -35,10 +35,23 @@ MainWindow::MainWindow(QWidget *parent)
     mediaPlayer->setAudioOutput(audioOutput); // устанавливаем аудиовыход для воспроизведения звука
     mediaPlayer->setVideoOutput(videoWidget); // устанавливаем виджет для вывода видео
 
-    // добавляем videoWidget вместо QWidget(vidWidget)
-    QVBoxLayout *layout = new QVBoxLayout(ui->vidWidget);
-    layout->addWidget(videoWidget);
-    ui->vidWidget->setLayout(layout);
+    // Создаем imageLabel для отображения изображений
+    imageLabel = new QLabel(this);
+    imageLabel->setAlignment(Qt::AlignCenter);
+    imageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    imageLabel->setScaledContents(false);
+    imageLabel->installEventFilter(this);
+
+    // Удаляем существующий лейаут, если он есть
+    if (ui->vidWidget->layout()) {
+        delete ui->vidWidget->layout();
+    }
+
+    // Создаем стековый лейаут для переключения между видео и изображениями
+    mainStackedLayout = new QStackedLayout(ui->vidWidget);
+    mainStackedLayout->addWidget(videoWidget);    // Индекс 0 - видео
+    mainStackedLayout->addWidget(imageLabel);     // Индекс 1 - изображение
+    mainStackedLayout->setCurrentIndex(0);        // По умолчанию показываем видео
 
     audioOutput->setVolume(50);
 
@@ -57,13 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     // соединение сигнала изменения длительности со слотом updateDuration
     connect(mediaPlayer, &QMediaPlayer::durationChanged, this, &MainWindow::updateDuration);
 
-    imageLabel = ui->imageLabel;
-    imageLabel->setAlignment(Qt::AlignCenter);
-    imageLabel->setScaledContents(false); // Меняем на false и используем масштабирование вручную
-    imageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    imageLabel->hide();
-
-    //start
+    //start - скрываем элементы управления при запуске
     ui->vidWidget->hide();
     ui->timeSlider->hide();
     ui->volumeSlider->hide();
@@ -73,7 +80,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pauseButton->hide();
     ui->playButton->hide();
     ui->fullScreenButton->hide();
-
 }
 
 MainWindow::~MainWindow()
@@ -136,89 +142,27 @@ void MainWindow::on_volumeSlider_valueChanged(int value)
 void MainWindow::on_filesList_itemClicked(QListWidgetItem *item)
 {
     QString filePath = item->data(Qt::UserRole).toString();
-    if (isImageFile(filePath)) {
-        displayFile(filePath);
-    }
-    else{
-        imageLabel->hide();
-        ui->vidWidget->show();
-        videoWidget->show();
-        ui->timeSlider->show();
-        ui->volumeSlider->show();
-        ui->timeLabel->show();
-        ui->backButton->show();
-        ui->nextButton->show();
-        ui->pauseButton->show();
-        ui->playButton->show();
-        ui->fullScreenButton->show();
-
-        mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
-        mediaPlayer->play();
-    }
-
-    QString name = ui->filesList->currentItem()->text();
-    ui->fileNameLabel->setText(name);
+    displayFile(filePath);
 }
 
 
 void MainWindow::on_actionOpen_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть медиа"), "",
-                                                    tr("Video (*.mp4 *.avi *.mkv);;All files (*.*);; Images (*.jpg *.jpeg *.png"));
+                                                    tr("Video (*.mp4 *.avi *.mkv);;All files (*.*);; Images (*.jpg *.jpeg *.png)"));
 
     if (fileName.isEmpty()) {
         return;
     }
 
-    // создание объекта QFileInfo с использованием пути к файлу fileName
+    // создание объекта QListWidgetItem с использованием пути к файлу fileName
     QListWidgetItem *item = new QListWidgetItem(QFileInfo(fileName).fileName(), ui->filesList);
     item->setData(Qt::UserRole, fileName); // установка дополнительных сведений о файле
     ui->filesList->addItem(item);
     ui->filesList->setCurrentItem(item); // Выбираем только что добавленный элемент
 
-    if (isImageFile(fileName)) {
-        // Скрываем элементы управления видео
-        ui->vidWidget->hide();
-        ui->timeSlider->hide();
-        ui->volumeSlider->hide();
-        ui->timeLabel->hide();
-        ui->backButton->hide();
-        ui->nextButton->hide();
-        ui->pauseButton->hide();
-        ui->playButton->hide();
-        ui->fullScreenButton->show();
-
-        // Показываем и настраиваем imageLabel
-        imageLabel->show();
-        currentImagePath = fileName;
-        currentPixmap = QPixmap(fileName);
-        if (!currentPixmap.isNull()) {
-            imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
-                                                       Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        }
-        mediaPlayer->stop(); // Останавливаем плеер, если он воспроизводил что-то
-    }
-    else {
-        // метод QMediaPlayer устанавливающий источник медиа для воспроизведения.
-        mediaPlayer->setSource(QUrl::fromLocalFile(fileName));
-        imageLabel->hide();
-
-        ui->vidWidget->show();
-        videoWidget->show();
-        ui->timeSlider->show();
-        ui->volumeSlider->show();
-        ui->timeLabel->show();
-        ui->backButton->show();
-        ui->nextButton->show();
-        ui->pauseButton->show();
-        ui->playButton->show();
-        ui->fullScreenButton->show();
-
-        mediaPlayer->play();
-    }
-
-    QString name = QFileInfo(fileName).fileName();
-    ui->fileNameLabel->setText(name);
+    // Используем общую функцию для отображения файла
+    displayFile(fileName);
 }
 
 void MainWindow::playCurrentItem() {
@@ -226,8 +170,7 @@ void MainWindow::playCurrentItem() {
 
     if (currentItem) {
         QString filePath = currentItem->data(Qt::UserRole).toString();
-        mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
-        mediaPlayer->play();
+        displayFile(filePath);
     }
 }
 
@@ -301,12 +244,28 @@ void MainWindow::on_fullScreenButton_clicked()
 {
     if (!isFullScreen) {
         if (isImage) {
-            // Handle fullscreen for images
+            // Сохраняем оригинальные параметры для восстановления
+            QWidget* originalParent = imageLabel->parentWidget();
+            QRect originalGeometry = imageLabel->geometry();
+
+            // Переходим в полноэкранный режим
+            imageLabel->setParent(nullptr);
             imageLabel->setWindowFlags(Qt::Window);
             imageLabel->showFullScreen();
+
+            // Сохраняем для восстановления
+            imageLabel->setProperty("originalParent", QVariant::fromValue(originalParent));
+            imageLabel->setProperty("originalGeometry", originalGeometry);
+
+            // Обновляем отображение изображения
+            if (!currentPixmap.isNull()) {
+                imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
+                                                           Qt::KeepAspectRatio,
+                                                           Qt::SmoothTransformation));
+            }
             isFullScreen = true;
         } else {
-            // Your existing code for videos
+            // Код для видео
             bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
             mediaPlayer->pause();
             qint64 currentPosition = mediaPlayer->position();
@@ -329,7 +288,7 @@ void MainWindow::on_fullScreenButton_clicked()
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Escape && isFullScreen) {
-        on_fullScreenButton_clicked();
+        exitFullScreen();
     } else {
         QMainWindow::keyPressEvent(event);
     }
@@ -339,27 +298,54 @@ void MainWindow::exitFullScreen()
 {
     if (isFullScreen) {
         if (isImage) {
-            // Handle exit fullscreen for images
+            // Восстанавливаем изображение в исходное положение
+            QWidget* originalParent = imageLabel->property("originalParent").value<QWidget*>();
+            QRect originalGeometry = imageLabel->property("originalGeometry").toRect();
+
             imageLabel->setWindowFlags(Qt::Widget);
+            if (originalParent) {
+                imageLabel->setParent(originalParent);
+                imageLabel->setGeometry(originalGeometry);
+            }
+
+            // Возвращаем в стековый лейаут
+            if (mainStackedLayout && mainStackedLayout->indexOf(imageLabel) == -1) {
+                mainStackedLayout->addWidget(imageLabel);
+            }
+            mainStackedLayout->setCurrentWidget(imageLabel);
+
+            // Обновляем отображение
+            if (!currentPixmap.isNull()) {
+                imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
+                                                           Qt::KeepAspectRatio,
+                                                           Qt::SmoothTransformation));
+            }
+
             imageLabel->show();
+            isFullScreen = false;
         } else {
-            // Your existing code for videos
+            // Код для видео
             bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
             mediaPlayer->pause();
             qint64 currentPosition = mediaPlayer->position();
             mediaPlayer->setVideoOutput(nullptr);
             videoWidget->hide();
             videoWidget->setWindowFlags(Qt::Widget);
+
+            // Пересоздаем видеовиджет
             delete videoWidget;
             videoWidget = new QVideoWidget(this);
             videoWidget->installEventFilter(this);
-            QLayout* oldLayout = ui->vidWidget->layout();
-            if (oldLayout) {
-                delete oldLayout;
+
+            // Обновляем стековый лейаут
+            if (mainStackedLayout) {
+                if (mainStackedLayout->count() > 0) {
+                    mainStackedLayout->removeWidget(mainStackedLayout->widget(0));
+                }
+                mainStackedLayout->insertWidget(0, videoWidget);
+                mainStackedLayout->setCurrentIndex(0);
             }
-            QVBoxLayout* layout = new QVBoxLayout(ui->vidWidget);
-            layout->setContentsMargins(0, 0, 0, 0);
-            layout->addWidget(videoWidget);
+
             mediaPlayer->setVideoOutput(videoWidget);
             videoWidget->show();
             mediaPlayer->setPosition(currentPosition);
@@ -374,13 +360,11 @@ void MainWindow::exitFullScreen()
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (obj == videoWidget) {
-        if (event->type() == QEvent::KeyPress) {
-            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-            if (keyEvent->key() == Qt::Key_Escape && isFullScreen) {
-                exitFullScreen();
-                return true;
-            }
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Escape && isFullScreen) {
+            exitFullScreen();
+            return true;
         }
     }
     return QMainWindow::eventFilter(obj, event);
@@ -395,15 +379,14 @@ bool MainWindow::isImageFile(const QString &filePath) {
 }
 
 void MainWindow::displayFile(const QString &filePath) {
+    // Определяем тип файла
     isImage = isImageFile(filePath);
 
     if (isImage) {
-        // Останавливаем видеоплеер и скрываем видеовиджет
+        // Останавливаем медиаплеер
         mediaPlayer->stop();
-        videoWidget->hide();
-        ui->vidWidget->hide();
 
-        // Скрываем элементы управления для видео
+        // Скрываем элементы управления видео
         ui->timeSlider->hide();
         ui->volumeSlider->hide();
         ui->timeLabel->hide();
@@ -417,18 +400,33 @@ void MainWindow::displayFile(const QString &filePath) {
         currentImagePath = filePath;
         currentPixmap = QPixmap(filePath);
 
-        imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
-                                                    Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        imageLabel->show();
+        if (!currentPixmap.isNull()) {
+            // Очищаем предыдущее содержимое
+            imageLabel->clear();
 
-    }
-    else {
-        // Скрываем изображение
-        imageLabel->hide();
+            // Масштабируем изображение под размер виджета с сохранением пропорций
+            imageLabel->setPixmap(currentPixmap.scaled(
+                imageLabel->size(),
+                Qt::KeepAspectRatio,
+                Qt::SmoothTransformation
+                ));
 
-        // Показываем видеовиджет и элементы управления
+            // Переключаемся на виджет изображения в стековом лейауте
+            if (mainStackedLayout) {
+                mainStackedLayout->setCurrentWidget(imageLabel);
+            }
+
+            // Показываем виджет-контейнер
+            ui->vidWidget->show();
+        }
+    } else {
+        // Переключаемся на видеовиджет в стековом лейауте
+        if (mainStackedLayout) {
+            mainStackedLayout->setCurrentWidget(videoWidget);
+        }
+
+        // Показываем элементы управления видео
         ui->vidWidget->show();
-        videoWidget->show();
         ui->timeSlider->show();
         ui->volumeSlider->show();
         ui->timeLabel->show();
@@ -443,29 +441,11 @@ void MainWindow::displayFile(const QString &filePath) {
         mediaPlayer->play();
     }
 
-    // Обновляем имя файла
+    // Обновляем название файла
     QString name = QFileInfo(filePath).fileName();
     ui->fileNameLabel->setText(name);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
-    if (isImage && !currentImagePath.isEmpty()) {
-        QPixmap pixmap(currentImagePath);
-        if (!pixmap.isNull()) {
-            imageLabel->setPixmap(pixmap.scaled(imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        }
-    }
     QMainWindow::resizeEvent(event);
 }
-
-void MainWindow::updateImageDisplay() {
-    if (!currentPixmap.isNull()) {
-        // Используем актуальный размер imageLabel для масштабирования
-        imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
-                                                   Qt::KeepAspectRatio,
-                                                   Qt::SmoothTransformation));
-    }
-}
-
-
-

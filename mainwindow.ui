@@ -138,7 +138,7 @@ QListWidget::item:hover {
               <x>40</x>
               <y>10</y>
               <width>761</width>
-              <height>480</height>
+              <height>461</height>
              </rect>
             </property>
             <property name="sizePolicy">

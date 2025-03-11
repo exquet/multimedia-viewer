@@ -1,6 +1,5 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
 #include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QAudioOutput>
@@ -11,6 +10,7 @@
 #include <QWidget>
 #include <QLayout>
 #include <QVBoxLayout>
+#include <QStackedLayout>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QUrl>
@@ -22,6 +22,7 @@
 #include <QPixmap>
 #include <QImageReader>
 #include <QTimer>
+#include <QDebug>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -32,19 +33,14 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
-
 private slots:
-
-
     void on_nextButton_clicked();
     void on_pauseButton_clicked();
     void on_playButton_clicked();
@@ -60,11 +56,8 @@ private slots:
     void setPosition(int position);
     void on_fullScreenButton_clicked();
     void exitFullScreen();
-    void updateImageDisplay();
-
 private:
     Ui::MainWindow *ui;
-
     QStringList mediaFiles;
     int currentIndex;
     QMediaPlayer *mediaPlayer;
@@ -79,7 +72,7 @@ private:
     bool isImage;
     QString currentImagePath;  // Путь к текущему файлу
     QPixmap currentPixmap;
-
+    QStackedLayout* mainStackedLayout; // Добавлен стековый лейаут для переключения между видео и изображениями
     void setupImageDisplay();  // Настройка отображения изображений
     bool isImageFile(const QString &filePath);
     void displayFile(const QString &filePath);  // Отображение файла (видео или изображение)
