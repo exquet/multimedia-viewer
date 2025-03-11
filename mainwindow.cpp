@@ -416,8 +416,14 @@ void MainWindow::displayFile(const QString &filePath) {
                 mainStackedLayout->setCurrentWidget(imageLabel);
             }
 
+            // Отладочная информация
+            qDebug() << "Размер imageLabel:" << imageLabel->size();
+            qDebug() << "Размер изображения:" << currentPixmap.size();
+
             // Показываем виджет-контейнер
             ui->vidWidget->show();
+        } else {
+            qDebug() << "Ошибка загрузки изображения:" << filePath;
         }
     } else {
         // Переключаемся на видеовиджет в стековом лейауте
@@ -448,4 +454,20 @@ void MainWindow::displayFile(const QString &filePath) {
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
+
+    // Обновляем отображение изображения при изменении размеров окна
+    if (isImage && !currentPixmap.isNull()) {
+        updateImageDisplay();
+    }
+}
+
+void MainWindow::updateImageDisplay() {
+    if (!currentPixmap.isNull()) {
+        // Масштабируем изображение под текущий размер виджета с сохранением пропорций
+        imageLabel->setPixmap(currentPixmap.scaled(
+            imageLabel->size(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation
+            ));
+    }
 }

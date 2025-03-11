@@ -56,6 +56,7 @@ private slots:
     void setPosition(int position);
     void on_fullScreenButton_clicked();
     void exitFullScreen();
+    void updateImageDisplay();
 private:
     Ui::MainWindow *ui;
     QStringList mediaFiles;
