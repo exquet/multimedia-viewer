@@ -11,6 +11,7 @@ qt_add_executable(multimdia
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    icons.qrc
 )
 
 target_link_libraries(multimdia

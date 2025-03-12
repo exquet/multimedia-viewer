@@ -12,19 +12,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     //icons
-    QIcon logoIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/logo.png");
+    QIcon logoIcon(":/icons/logo.png");
     MainWindow::setWindowIcon(logoIcon);
-    QIcon fileIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/file.png");
+    QIcon fileIcon(":/icons/file.png");
     ui->actionOpen->setIcon(fileIcon);
-    QIcon playIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/play.png");
+    QIcon playIcon(":/icons/play.png");
     ui->playButton->setIcon(playIcon);
-    QIcon pauseIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/pause.png");
+    QIcon pauseIcon(":/icons/pause.png");
     ui->pauseButton->setIcon(pauseIcon);
-    QIcon backIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/back.png");
+    QIcon backIcon(":/icons/back.png");
     ui->backButton->setIcon(backIcon);
-    QIcon nextIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/next.png");
+    QIcon nextIcon(":/icons/next.png");
     ui->nextButton->setIcon(nextIcon);
-    QIcon fsIcon("C:/Users/dimat/Documents/QT projects/multimdia/icons/fullscreen.png");
+    QIcon fsIcon(":/icons/fullscreen.png");
     ui->fullScreenButton->setIcon(fsIcon);
 
     audioOutput = new QAudioOutput(this); // объект аудиовыхода
@@ -149,7 +149,9 @@ void MainWindow::on_filesList_itemClicked(QListWidgetItem *item)
 void MainWindow::on_actionOpen_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть медиа"), "",
-                                                    tr("Video (*.mp4 *.avi *.mkv);;All files (*.*);; Images (*.jpg *.jpeg *.png)"));
+                                                    tr("All files (*.*)"
+                                                       ";;Photo (*.jpg *.jpeg *.png)"
+                                                       ";;Video (*.mp4 *.avi *.mkv)"));
 
     if (fileName.isEmpty()) {
         return;
