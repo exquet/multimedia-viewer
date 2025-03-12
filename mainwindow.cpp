@@ -245,26 +245,28 @@ void MainWindow::on_fullScreenButton_clicked()
     if (!isFullScreen) {
         if (isImage) {
             // Сохраняем оригинальные параметры для восстановления
-            QWidget* originalParent = imageLabel->parentWidget();
-            QRect originalGeometry = imageLabel->geometry();
+            imageLabel->setProperty("originalParent", QVariant::fromValue(imageLabel->parentWidget()));
+            imageLabel->setProperty("originalGeometry", imageLabel->geometry());
+
+            // Сначала удаляем из текущего макета
+            if (mainStackedLayout) {
+                mainStackedLayout->removeWidget(imageLabel);
+            }
 
             // Переходим в полноэкранный режим
             imageLabel->setParent(nullptr);
             imageLabel->setWindowFlags(Qt::Window);
             imageLabel->showFullScreen();
 
-            // Сохраняем для восстановления
-            imageLabel->setProperty("originalParent", QVariant::fromValue(originalParent));
-            imageLabel->setProperty("originalGeometry", originalGeometry);
-
-            // Обновляем отображение изображения
             if (!currentPixmap.isNull()) {
                 imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
                                                            Qt::KeepAspectRatio,
                                                            Qt::SmoothTransformation));
             }
+
             isFullScreen = true;
-        } else {
+        }
+        else {
             // Код для видео
             bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
             mediaPlayer->pause();
@@ -281,7 +283,8 @@ void MainWindow::on_fullScreenButton_clicked()
             }
             isFullScreen = true;
         }
-    } else {
+    }
+    else {
         exitFullScreen();
     }
 }
@@ -289,7 +292,8 @@ void MainWindow::on_fullScreenButton_clicked()
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Escape && isFullScreen) {
         exitFullScreen();
-    } else {
+    }
+    else {
         QMainWindow::keyPressEvent(event);
     }
 }
@@ -298,32 +302,35 @@ void MainWindow::exitFullScreen()
 {
     if (isFullScreen) {
         if (isImage) {
-            // Восстанавливаем изображение в исходное положение
-            QWidget* originalParent = imageLabel->property("originalParent").value<QWidget*>();
-            QRect originalGeometry = imageLabel->property("originalGeometry").toRect();
+            // Сначала скрываем полноэкранное окно
+            imageLabel->hide();
 
+            // Сбрасываем флаги окна
             imageLabel->setWindowFlags(Qt::Widget);
+
+            // Получаем исходного родителя из сохраненного свойства
+            QWidget* originalParent = imageLabel->property("originalParent").value<QWidget*>();
+
+            // Возвращаем родителя к исходному
             if (originalParent) {
                 imageLabel->setParent(originalParent);
-                imageLabel->setGeometry(originalGeometry);
+            } else {
+                imageLabel->setParent(ui->vidWidget); // Запасной вариант
             }
 
-            // Возвращаем в стековый лейаут
-            if (mainStackedLayout && mainStackedLayout->indexOf(imageLabel) == -1) {
-                mainStackedLayout->addWidget(imageLabel);
-            }
-            mainStackedLayout->setCurrentWidget(imageLabel);
-
-            // Обновляем отображение
-            if (!currentPixmap.isNull()) {
-                imageLabel->setPixmap(currentPixmap.scaled(imageLabel->size(),
-                                                           Qt::KeepAspectRatio,
-                                                           Qt::SmoothTransformation));
+            // Добавляем обратно в макет, если нужно
+            if (mainStackedLayout) {
+                // Проверяем, есть ли уже в макете, чтобы избежать дубликатов
+                if (mainStackedLayout->indexOf(imageLabel) == -1) {
+                    mainStackedLayout->addWidget(imageLabel);
+                }
+                mainStackedLayout->setCurrentWidget(imageLabel);
             }
 
             imageLabel->show();
-            isFullScreen = false;
-        } else {
+            updateImageDisplay();
+        }
+        else {
             // Код для видео
             bool wasPlaying = (mediaPlayer->playbackState() == QMediaPlayer::PlayingState);
             mediaPlayer->pause();
