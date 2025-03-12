@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     mediaPlayer->setVideoOutput(videoWidget); // устанавливаем виджет для вывода видео
 
     // Создаем imageLabel для отображения изображений
-    imageLabel = new QLabel(this);
+    imageLabel = ui->imageLabel;
     imageLabel->setAlignment(Qt::AlignCenter);
     imageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     imageLabel->setScaledContents(false);
@@ -422,10 +422,9 @@ void MainWindow::displayFile(const QString &filePath) {
 
             // Показываем виджет-контейнер
             ui->vidWidget->show();
-        } else {
-            qDebug() << "Ошибка загрузки изображения:" << filePath;
         }
-    } else {
+    }
+    else {
         // Переключаемся на видеовиджет в стековом лейауте
         if (mainStackedLayout) {
             mainStackedLayout->setCurrentWidget(videoWidget);
@@ -453,8 +452,6 @@ void MainWindow::displayFile(const QString &filePath) {
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
-    QMainWindow::resizeEvent(event);
-
     // Обновляем отображение изображения при изменении размеров окна
     if (isImage && !currentPixmap.isNull()) {
         updateImageDisplay();
