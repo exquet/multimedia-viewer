@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , duration(0)
     , isFullScreen(false)
     , isImage(false)
+    , isAudio(false)
 {
     ui->setupUi(this);
 
@@ -151,6 +152,7 @@ void MainWindow::on_actionOpen_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть медиа"), "",
                                                     tr("All files (*.*)"
                                                        ";;Photo (*.jpg *.jpeg *.png)"
+                                                       ";;Audio (*.mp3 *.wav *.ogg *.m4a *.aac)"
                                                        ";;Video (*.mp4 *.avi *.mkv)"));
 
     if (fileName.isEmpty()) {
@@ -390,6 +392,7 @@ bool MainWindow::isImageFile(const QString &filePath) {
 void MainWindow::displayFile(const QString &filePath) {
     // Определяем тип файла
     isImage = isImageFile(filePath);
+    isAudio = isAudioFile(filePath);
 
     if (isImage) {
         // Останавливаем медиаплеер
@@ -432,6 +435,30 @@ void MainWindow::displayFile(const QString &filePath) {
             // Показываем виджет-контейнер
             ui->vidWidget->show();
         }
+    }
+    else if (isAudio) {
+        mediaPlayer->stop();
+
+        if (mainStackedLayout) {
+            mainStackedLayout->setCurrentWidget(imageLabel);
+        }
+
+        // Очищаем предыдущее изображение
+        imageLabel->clear();
+
+        ui->vidWidget->show();
+        ui->timeSlider->show();
+        ui->volumeSlider->show();
+        ui->timeLabel->show();
+        ui->backButton->show();
+        ui->nextButton->show();
+        ui->pauseButton->show();
+        ui->playButton->show();
+        ui->fullScreenButton->hide();
+
+        // Устанавливаем источник и начинаем воспроизведение
+        mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
+        mediaPlayer->play();
     }
     else {
         // Переключаемся на видеовиджет в стековом лейауте
@@ -476,4 +503,12 @@ void MainWindow::updateImageDisplay() {
             Qt::SmoothTransformation
             ));
     }
+}
+
+bool MainWindow::isAudioFile(const QString &filePath) {
+    QFileInfo fileInfo(filePath);
+    QString ext = fileInfo.suffix().toLower();
+
+    // Распространенные расширения аудио файлов
+    return (ext == "mp3" || ext == "wav" || ext == "ogg" || ext == "m4a" || ext == "aac");
 }

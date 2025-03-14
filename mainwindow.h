@@ -77,5 +77,7 @@ private:
     void setupImageDisplay();  // Настройка отображения изображений
     bool isImageFile(const QString &filePath);
     void displayFile(const QString &filePath);  // Отображение файла (видео или изображение)
+    bool isAudio;
+    bool isAudioFile(const QString &filePath);
 };
 #endif // MAINWINDOW_H
