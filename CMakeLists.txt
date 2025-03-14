@@ -14,6 +14,18 @@ qt_add_executable(multimdia
     icons.qrc
 )
 
+qt_add_resources(multimdia "resources"
+    PREFIX "/"
+    FILES
+        icons/logo.png
+        icons/file.png
+        icons/play.png
+        icons/pause.png
+        icons/back.png
+        icons/next.png
+        icons/fullscreen.png
+)
+
 target_link_libraries(multimdia
     PRIVATE
         Qt::Core
