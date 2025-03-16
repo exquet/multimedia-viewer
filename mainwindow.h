@@ -79,5 +79,8 @@ private:
     void displayFile(const QString &filePath);  // Отображение файла (видео или изображение)
     bool isAudio;
     bool isAudioFile(const QString &filePath);
+
+    const QStringList IMAGE_EXT = {"jpg", "jpeg", "png"};
+    const QStringList AUDIO_EXT = {"mp3", "wav", "ogg", "m4a", "aac"};
 };
 #endif // MAINWINDOW_H

@@ -86,6 +86,9 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete mediaPlayer;
+    delete audioOutput;
+    delete videoWidget;
 }
 
 void MainWindow::on_nextButton_clicked()
@@ -386,7 +389,7 @@ bool MainWindow::isImageFile(const QString &filePath) {
     QString ext = fileInfo.suffix().toLower();
 
     // true если jpg или jpeg или png
-    return (ext == "jpg" || ext == "jpeg" || ext == "png");
+    return IMAGE_EXT.contains(ext);
 }
 
 void MainWindow::displayFile(const QString &filePath) {
@@ -510,5 +513,5 @@ bool MainWindow::isAudioFile(const QString &filePath) {
     QString ext = fileInfo.suffix().toLower();
 
     // Распространенные расширения аудио файлов
-    return (ext == "mp3" || ext == "wav" || ext == "ogg" || ext == "m4a" || ext == "aac");
+    return AUDIO_EXT.contains(ext);
 }
