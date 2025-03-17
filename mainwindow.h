@@ -23,6 +23,7 @@
 #include <QImageReader>
 #include <QTimer>
 #include <QDebug>
+#include <QShortcut>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -40,6 +41,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+
 private slots:
     void on_nextButton_clicked();
     void on_pauseButton_clicked();
@@ -57,6 +59,7 @@ private slots:
     void on_fullScreenButton_clicked();
     void exitFullScreen();
     void updateImageDisplay();
+    void mediaIsPlaying();
 private:
     Ui::MainWindow *ui;
     QStringList mediaFiles;

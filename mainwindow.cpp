@@ -81,6 +81,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pauseButton->hide();
     ui->playButton->hide();
     ui->fullScreenButton->hide();
+
+    QShortcut *playShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
+    connect(playShortcut, &QShortcut::activated, this, &MainWindow::mediaIsPlaying);
+
+    QShortcut *nextShortcut = new QShortcut(QKeySequence(Qt::Key_Right), this);
+    connect(nextShortcut, &QShortcut::activated, this, &MainWindow::on_nextButton_clicked);
+
+    QShortcut *prevShortcut = new QShortcut(QKeySequence(Qt::Key_Left), this);
+    connect(prevShortcut, &QShortcut::activated, this, &MainWindow::on_backButton_clicked);
 }
 
 MainWindow::~MainWindow()
@@ -430,12 +439,6 @@ void MainWindow::displayFile(const QString &filePath) {
             if (mainStackedLayout) {
                 mainStackedLayout->setCurrentWidget(imageLabel);
             }
-
-            // Отладочная информация
-            qDebug() << "Размер imageLabel:" << imageLabel->size();
-            qDebug() << "Размер изображения:" << currentPixmap.size();
-
-            // Показываем виджет-контейнер
             ui->vidWidget->show();
         }
     }
@@ -461,7 +464,6 @@ void MainWindow::displayFile(const QString &filePath) {
 
         // Устанавливаем источник и начинаем воспроизведение
         mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
-        mediaPlayer->play();
     }
     else {
         // Переключаемся на видеовиджет в стековом лейауте
@@ -482,7 +484,6 @@ void MainWindow::displayFile(const QString &filePath) {
 
         // Устанавливаем источник и начинаем воспроизведение
         mediaPlayer->setSource(QUrl::fromLocalFile(filePath));
-        mediaPlayer->play();
     }
 
     // Обновляем название файла
@@ -514,4 +515,13 @@ bool MainWindow::isAudioFile(const QString &filePath) {
 
     // Распространенные расширения аудио файлов
     return AUDIO_EXT.contains(ext);
+}
+
+void MainWindow::mediaIsPlaying() {
+    if (mediaPlayer->isPlaying()) {
+        on_pauseButton_clicked();
+    }
+    else {
+        on_playButton_clicked();
+    }
 }
